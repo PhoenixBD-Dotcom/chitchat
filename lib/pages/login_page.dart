@@ -1,4 +1,5 @@
 import 'package:chitchat/consts.dart';
+import 'package:chitchat/services/alert_service.dart';
 import 'package:chitchat/services/auth_service.dart';
 import 'package:chitchat/services/navigation_service.dart';
 import 'package:chitchat/widgets/custom_form_field.dart';
@@ -18,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
 
   late AuthService _authService;
   late NavigationService _navigationService;
+  late AlertService _alertService;
 
   String? email, password;
 
@@ -26,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     _authService = _getIt.get<AuthService>();
     _navigationService = _getIt.get<NavigationService>();
+    _alertService = _getIt.get<AlertService>();
   }
 
 
@@ -134,7 +137,10 @@ class _LoginPageState extends State<LoginPage> {
             bool result = await _authService.login(email!, password!);
             if(result){
               _navigationService.pushReplacementNamed("/home");
-            }else{}
+            }else{
+              _alertService.showToast(text: "Failed to login, Please try again!",);
+              icon: Icons.error;
+            }
           }
         },
         color: Theme.of(context).colorScheme.primary,
@@ -149,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _createAnAccountLink() {
-    return Expanded(
+    return const Expanded(
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,

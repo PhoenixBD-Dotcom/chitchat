@@ -1,3 +1,4 @@
+import 'package:chitchat/services/alert_service.dart';
 import 'package:chitchat/services/auth_service.dart';
 import 'package:chitchat/services/navigation_service.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,5 +18,8 @@ Future<void> registerServices() async{
   );
   getIt.registerSingleton<NavigationService>(
     NavigationService(),
+  );
+  getIt.registerSingleton<AlertService>(
+    AlertService(),
   );
 }

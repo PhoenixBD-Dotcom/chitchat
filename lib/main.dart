@@ -1,8 +1,6 @@
-import 'package:chitchat/pages/login_page.dart';
 import 'package:chitchat/services/auth_service.dart';
 import 'package:chitchat/services/navigation_service.dart';
 import 'package:chitchat/utils.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';

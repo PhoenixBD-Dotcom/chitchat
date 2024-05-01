@@ -1,13 +1,12 @@
 import 'package:chitchat/pages/home_page.dart';
 import 'package:chitchat/pages/login_page.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:path/path.dart';
 
 class NavigationService{
   late GlobalKey<NavigatorState> _navigatorkey;
   final Map<String, Widget Function(BuildContext)>_routes = {
-    "/login":(context) => LoginPage(),
-    "/home":(context) => Homepage(),
+    "/login":(context) => const LoginPage(),
+    "/home":(context) => const Homepage(),
   };
 
   GlobalKey<NavigatorState>? get navigatorKey{
