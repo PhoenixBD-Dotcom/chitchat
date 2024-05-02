@@ -3,6 +3,7 @@ import 'package:chitchat/services/alert_service.dart';
 import 'package:chitchat/services/auth_service.dart';
 import 'package:chitchat/services/navigation_service.dart';
 import 'package:chitchat/widgets/custom_form_field.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -155,17 +156,22 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _createAnAccountLink() {
-    return const Expanded(
+    return Expanded(
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
-          Text("Don't have an account?"),
-          Text(
-            "Sign Up",
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
+          const Text("Don't have an account?"),
+          GestureDetector(
+            onTap: (){
+              _navigationService.pushNamed("/register");
+            },
+            child: const Text(
+              "Sign Up",
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+              ),
             ),
           )
         ],
