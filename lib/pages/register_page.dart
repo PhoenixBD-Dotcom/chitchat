@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:chitchat/services/alert_service.dart';
 import 'package:chitchat/services/auth_service.dart';
 import 'package:chitchat/services/media_service.dart';
 import 'package:chitchat/services/navigation_service.dart';
+import 'package:chitchat/services/storage_service.dart';
 import 'package:chitchat/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -22,6 +24,8 @@ class _RegisterPageState extends State<RegisterPage> {
   late MediaService _mediaService;
   late NavigationService _navigationService;
   late AuthService _authService;
+  late StorageService _storageService;
+  late  AlertService _alertService;
 
   String? email, password, name;
   File? selectedImage;
@@ -33,6 +37,8 @@ class _RegisterPageState extends State<RegisterPage> {
     _mediaService = _getIt.get<MediaService>();
     _navigationService = _getIt.get<NavigationService>();
     _authService = _getIt.get<AuthService>();
+    _storageService = _getIt.get<StorageService>();
+    _alertService = _getIt.get<AlertService>();
   }
 
   @override
@@ -177,10 +183,13 @@ class _RegisterPageState extends State<RegisterPage> {
             isLoading = true;
           });
           try{
-            if (_registerFormKey.currentState?.validate() ?? false && selectedImage != null){
+            if ((_registerFormKey.currentState?.validate() ?? false) && selectedImage != null){
               _registerFormKey.currentState?.save();
               bool result = await _authService.signup(email!, password!);
-              if (result){}
+              if (result){
+                String? pfpURL = await _storageService.uploadUserPfp(file: selectedImage!, uid: _authService.user!.uid );
+              }
+              _alertService.showToast(text: "User Created Successfully!",);
             }
           }catch(e){
             print(e);
@@ -188,6 +197,7 @@ class _RegisterPageState extends State<RegisterPage> {
           setState(() {
             isLoading = false;
           });
+
         },
         child: const Text(
           "Register",
