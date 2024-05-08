@@ -1,5 +1,6 @@
 import 'package:chitchat/services/alert_service.dart';
 import 'package:chitchat/services/auth_service.dart';
+import 'package:chitchat/services/database_service.dart';
 import 'package:chitchat/services/media_service.dart';
 import 'package:chitchat/services/navigation_service.dart';
 import 'package:chitchat/services/storage_service.dart';
@@ -29,5 +30,8 @@ Future<void> registerServices() async{
   );
   getIt.registerSingleton<StorageService>(
     StorageService(),
+  );
+  getIt.registerSingleton<DatabaseService>(
+    DatabaseService(),
   );
 }

@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:chitchat/models/user_profile.dart';
 import 'package:chitchat/services/alert_service.dart';
 import 'package:chitchat/services/auth_service.dart';
+import 'package:chitchat/services/database_service.dart';
 import 'package:chitchat/services/media_service.dart';
 import 'package:chitchat/services/navigation_service.dart';
 import 'package:chitchat/services/storage_service.dart';
@@ -25,7 +27,8 @@ class _RegisterPageState extends State<RegisterPage> {
   late NavigationService _navigationService;
   late AuthService _authService;
   late StorageService _storageService;
-  late  AlertService _alertService;
+  late AlertService _alertService;
+  late DatabaseService _databaseService;
 
   String? email, password, name;
   File? selectedImage;
@@ -39,6 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
     _authService = _getIt.get<AuthService>();
     _storageService = _getIt.get<StorageService>();
     _alertService = _getIt.get<AlertService>();
+    _databaseService = _getIt.get<DatabaseService>();
   }
 
   @override
@@ -59,9 +63,14 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Column(
           children: <Widget>[
             _headerText(),
-            if(!isLoading) _registerForm(),
-            if(!isLoading) _loginAccountLink(),
-            if(isLoading) const Expanded(child: Center(child: CircularProgressIndicator(),),),
+            if (!isLoading) _registerForm(),
+            if (!isLoading) _loginAccountLink(),
+            if (isLoading)
+              const Expanded(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
           ],
         ),
       ),
@@ -178,26 +187,40 @@ class _RegisterPageState extends State<RegisterPage> {
       width: MediaQuery.sizeOf(context).width,
       child: MaterialButton(
         color: Theme.of(context).colorScheme.primary,
-        onPressed: () async{
+        onPressed: () async {
           setState(() {
             isLoading = true;
           });
-          try{
-            if ((_registerFormKey.currentState?.validate() ?? false) && selectedImage != null){
+          try {
+            if ((_registerFormKey.currentState?.validate() ?? false) &&
+                selectedImage != null) {
               _registerFormKey.currentState?.save();
               bool result = await _authService.signup(email!, password!);
-              if (result){
-                String? pfpURL = await _storageService.uploadUserPfp(file: selectedImage!, uid: _authService.user!.uid );
+              if (result) {
+                String? pfpURL = await _storageService.uploadUserPfp(
+                  file: selectedImage!,
+                  uid: _authService.user!.uid,
+                );
+                if (pfpURL != null) {
+                  await _databaseService.createUserProfile(
+                    userProfile: UserProfile(
+                      uid: _authService.user!.uid,
+                      name: name,
+                      pfpURL: pfpURL,
+                    ),
+                  );
+                  _alertService.showToast(
+                    text: "User Created Successfully!",
+                  );
+                }
               }
-              _alertService.showToast(text: "User Created Successfully!",);
             }
-          }catch(e){
+          } catch (e) {
             print(e);
           }
           setState(() {
             isLoading = false;
           });
-
         },
         child: const Text(
           "Register",
@@ -218,7 +241,7 @@ class _RegisterPageState extends State<RegisterPage> {
         children: <Widget>[
           const Text("Already have an account?"),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               _navigationService.goBack();
             },
             child: const Text(
