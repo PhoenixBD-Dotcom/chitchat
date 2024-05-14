@@ -212,11 +212,21 @@ class _RegisterPageState extends State<RegisterPage> {
                   _alertService.showToast(
                     text: "User Created Successfully!",
                   );
+                  _navigationService.goBack();
+                  _navigationService.pushReplacementNamed("/home");
+                }else{
+                  throw Exception("Unable to Upload Profile Picture!");
                 }
+              }else{
+                throw Exception("Unable to Create User!");
               }
             }
           } catch (e) {
             print(e);
+            _alertService.showToast(
+              text: "Failed to Create User! Please Try Again",
+              icon: Icons.error,
+            );
           }
           setState(() {
             isLoading = false;
