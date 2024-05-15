@@ -1,4 +1,5 @@
 import 'package:chitchat/models/user_profile.dart';
+import 'package:chitchat/pages/chat_page.dart';
 import 'package:chitchat/services/alert_service.dart';
 import 'package:chitchat/services/auth_service.dart';
 import 'package:chitchat/services/database_service.dart';
@@ -92,10 +93,27 @@ class _HomepageState extends State<Homepage> {
               itemBuilder: (context, index) {
                 UserProfile user = users[index].data();
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0,),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10.0,
+                  ),
                   child: ChatTile(
                     userProfile: user,
-                    onTap: () {},
+                    onTap: () async {
+                      final chatExists = await _databaseService.checkChatExists(
+                        _authService.user!.uid,
+                        user.uid!,
+                      );
+                      if (!chatExists) {
+                        await _databaseService.createNewChat(
+                          _authService.user!.uid,
+                          user.uid!,
+                        );
+                      }
+                      _navigationService
+                          .push(MaterialPageRoute(builder: (context) {
+                        return ChatPage(chatUser: user);
+                      }));
+                    },
                   ),
                 );
               },
